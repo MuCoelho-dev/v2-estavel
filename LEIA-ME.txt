@@ -1,0 +1,102 @@
+VITALIS - versão de demonstração (HTML + CSS + JavaScript)
+===========================================================
+
+COMO ABRIR
+  Dê dois cliques em "index.html". Abre direto no navegador (Chrome, Edge ou Firefox).
+  Não precisa de PHP, XAMPP, servidor nem banco de dados.
+
+LOGIN DE DEMONSTRAÇÃO
+  E-mail: fatec@email.com
+  Senha:  123456
+  (Também dá para criar novas contas em "Criar conta".)
+
+ONDE FICAM OS DADOS
+  Tudo é salvo no próprio navegador (localStorage). Se abrir em outro computador ou
+  outro navegador, começa vazio.
+  Para apagar tudo antes da apresentação: aperte F12, vá em "Console" e digite
+      Vitalis.resetar()
+
+ARQUIVOS
+  index.html       tela de login
+  cadastro.html    tela de criar conta
+  app.html         sistema (menu lateral + todas as telas internas)
+  css/style.css    cores, fontes e layout
+  js/storage.js    login e gravação dos dados no navegador
+  js/modulos.js    textos, ícones e campos de cada tela (Consultas, Exames,
+                   Medicamentos, Vacinas, Alergias, Documentos, Emergência)
+  js/app.js        monta as telas (Início, Meu perfil, listas e formulários)
+  js/dependentes.js   perfis de dependentes (seletor "Perfil ativo" e tela Dependentes)
+  js/leitor-ocr.js    lê o texto de PDFs e fotos (OCR)
+  js/reconhecedor.js  descobre o tipo do documento e extrai os dados (regras)
+  js/leitor-ui.js     mostra o resultado e preenche os formulários
+  js/vendor/          bibliotecas gratuitas usadas pelo leitor (Tesseract.js e PDF.js)
+  documentos-exemplo/ arquivos de teste (exame, receita, consulta, vacina...)
+
+COMO ALTERAR
+  Quer mudar um texto, título ou adicionar um campo num formulário?
+  Edite js/modulos.js. Exemplo, para adicionar "Convênio" nas consultas, acrescente
+  na lista "campos" de consultas:
+      { nome: 'convenio', label: 'Convênio', placeholder: 'Ex.: Unimed' },
+  Quer mudar a cor principal? Edite "--primary" no começo de css/style.css.
+
+
+=====================================================================================
+NOVIDADES DESTA VERSÃO
+=====================================================================================
+
+1) DEPENDENTES (administrar a saúde de outra pessoa, como um filho menor de idade)
+  - Menu "Dependentes": cadastre a pessoa (nome, parentesco, nascimento, tipo sanguíneo).
+  - Menu lateral "Perfil ativo": escolha "Eu" ou o dependente. Enquanto um dependente estiver
+    ativo, consultas, exames, vacinas, alergias, documentos etc. mostram e gravam os dados DELE,
+    separados dos seus. Uma faixa amarela no topo avisa de quem são os dados na tela.
+  - Excluir um dependente apaga também os registros dele.
+
+2) LEITURA AUTOMÁTICA DE DOCUMENTOS
+  - Em qualquer cadastro com anexo (Consultas, Exames, Medicamentos, Vacinas, Alergias e
+    Documentos), ao escolher a foto ou o PDF o sistema LÊ o documento, diz do que se trata e
+    preenche os campos. Os campos preenchidos ficam com a borda verde; é só conferir e salvar.
+  - Reconhece: exames de sangue/laboratório (com valores e unidades), exames de imagem,
+    consultas/relatórios, receitas (nome, dose, frequência e duração), vacinas (nome, dose, lote,
+    próxima dose), alergias e atestados.
+  - Se o documento for de outro tipo (ex.: uma receita anexada em "Consultas"), o sistema avisa e
+    oferece "Cadastrar em Medicamentos" levando o arquivo junto.
+  - Se o nome do paciente no documento for o de um dependente (ou o seu), o sistema avisa e
+    oferece trocar para o perfil certo.
+  - Exames: valores fora do "valor de referência" impresso no próprio laudo ganham ▲ ou ▼.
+  - Nunca apaga o que você já digitou. Botão "Ver o texto que o sistema leu" mostra o texto cru.
+  - Para testar, use os arquivos da pasta documentos-exemplo/ (todos fictícios).
+    Dica: cadastre o dependente "Pedro Henrique Santos" para ver o aviso de perfil com o
+    arquivo 6_vacina_do_filho_Pedro.png.
+  - Primeira leitura demora alguns segundos (carrega o leitor); as próximas são rápidas.
+  - Funciona sem internet, de graça, com duplo clique (testado no Chrome/Edge).
+
+
+=====================================================================================
+COMO O RECONHECIMENTO FUNCIONA (para explicar na apresentação)
+=====================================================================================
+Não usa inteligência artificial paga nem serviço online. São 3 etapas, todas no navegador:
+
+  ETAPA 1 - LEITURA DO TEXTO (js/leitor-ocr.js)
+    - PDF com texto: a biblioteca PDF.js (Mozilla, gratuita) extrai o texto direto do arquivo.
+    - Foto ou PDF escaneado: a biblioteca Tesseract.js (OCR de código aberto, licença Apache 2.0,
+      idioma português) "lê" a imagem e devolve o texto.
+    - As bibliotecas estão na pasta js/vendor/, por isso não precisa de internet.
+
+  ETAPA 2 - CLASSIFICAÇÃO (js/reconhecedor.js, lista TIPOS)
+    - Cada tipo de documento tem palavras-chave com pesos (ex.: "hemograma" = 5 pontos,
+      "valor de referência" = 5, "comprimido" = 3, "lote" = 3).
+    - Soma-se os pontos por tipo; o maior vence. A diferença para o 2º colocado dá a confiança
+      (alta, média ou baixa). Abaixo de 5 pontos o documento é "não identificado".
+
+  ETAPA 3 - EXTRAÇÃO DOS DADOS (js/reconhecedor.js)
+    - Expressões regulares (regex) procuram: datas (ignorando data de nascimento), laboratório/
+      clínica, médico e CRM, nome do paciente, valores com unidade (ex.: "Glicose 92 mg/dL"),
+      medicamentos com dose e frequência ("de 8 em 8 horas"), nome/lote/dose de vacinas.
+    - A função paraModulo() transforma isso nos campos de cada formulário.
+
+  É uma SUGESTÃO automática: o usuário sempre confere antes de salvar.
+  Limitações (boas de citar na banca): fotos tremidas ou escuras reduzem a precisão do OCR;
+  layouts muito diferentes de laboratórios podem exigir novas regras; o sistema não faz
+  diagnóstico, apenas organiza o que está escrito no documento.
+  Privacidade (LGPD): como o reconhecimento roda no próprio navegador, os documentos de saúde
+  não são enviados a nenhum servidor nem a empresas de IA.

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalis - Criar conta</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card wide">
+      <div class="auth-logo">V</div>
+      <h1>VITALIS</h1>
+      <p class="tagline">Crie sua conta para organizar seu histórico</p>
+
+      <form id="form-cadastro">
+        <div id="erro" class="auth-error" hidden></div>
+        <div class="field">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" placeholder="Digite seu nome" required>
+        </div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" placeholder="Digite seu e-mail" required>
+        </div>
+        <div class="field">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" placeholder="Mínimo de 6 caracteres" minlength="6" required>
+        </div>
+        <button type="submit" class="btn">Criar minha conta</button>
+      </form>
+
+      <p class="switch">Já possui uma conta? <a href="index.html">Fazer login</a></p>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    document.getElementById('form-cadastro').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const r = Vitalis.cadastrar(
+        document.getElementById('nome').value,
+        document.getElementById('email').value,
+        document.getElementById('senha').value
+      );
+      if (r.erro) {
+        const erro = document.getElementById('erro');
+        erro.textContent = r.erro;
+        erro.hidden = false;
+      } else {
+        location.href = 'app.html';
+      }
+    });
+  </script>
+</body>
+</html>

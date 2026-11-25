@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalis - Entrar</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">V</div>
+      <h1>VITALIS</h1>
+      <p class="tagline">Seu histórico. Sua saúde. Seu cuidado.</p>
+
+      <form id="form-login">
+        <div id="erro" class="auth-error" hidden></div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" placeholder="Digite seu e-mail" required>
+        </div>
+        <div class="field">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" placeholder="Digite sua senha" required>
+        </div>
+        <button type="submit" class="btn">Entrar</button>
+      </form>
+
+      <p class="switch">Ainda não possui uma conta? <a href="cadastro.html">Criar conta</a></p>
+      <p class="demo-hint">Demonstração: fatec@email.com / 123456</p>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    if (Vitalis.usuarioLogado()) location.href = 'app.html';
+
+    document.getElementById('form-login').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const ok = Vitalis.entrar(
+        document.getElementById('email').value,
+        document.getElementById('senha').value
+      );
+      if (ok) {
+        location.href = 'app.html';
+      } else {
+        const erro = document.getElementById('erro');
+        erro.textContent = 'E-mail ou senha incorretos.';
+        erro.hidden = false;
+      }
+    });
+  </script>
+</body>
+</html>
